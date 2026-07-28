@@ -249,15 +249,35 @@
       </div>
 
       <!-- להחלפה: קישור ישיר לקובץ באיכות מקסימלית (Google Drive / Dropbox / כל שרת אחר) -->
-      <a class="download-btn" href="https://drive.google.com/uc?export=download&id=1e4us4NFsqEiPXa-iTAiznBHiaA9Wp5QS" target="_blank" rel="noopener">
+      <a id="downloadBtn" class="download-btn" href="https://raw.githubusercontent.com/ando12345678/Tel-Yizhak-Postcards/main/POSTCARD_01.JPG" download>
         <span>הורדת התמונה באיכות מקסימלית</span>
-        <span class="size-tag">~80MB</span>
+        <span class="size-tag" id="fileSizeTag">בודק גודל…</span>
       </a>
     </div>
 
     <footer>נשלח כגלויה · נסרק בעולם האמיתי</footer>
 
   </main>
+  <script>
+    (function(){
+      const btn = document.getElementById('downloadBtn');
+      const tag = document.getElementById('fileSizeTag');
+      const url = btn.getAttribute('href');
 
+      // שם הקובץ להורדה נלקח אוטומטית מסוף הכתובת
+      const fileName = decodeURIComponent(url.split('/').pop());
+      btn.setAttribute('download', fileName);
+
+      // גודל הקובץ נשלף בפועל מהשרת (בדיקת HEAD, בלי להוריד את כל הקובץ)
+      fetch(url, { method: 'HEAD' })
+        .then(res => {
+          const bytes = res.headers.get('content-length');
+          if (!bytes) { tag.textContent = ''; return; }
+          const mb = (parseInt(bytes, 10) / (1024 * 1024)).toFixed(1);
+          tag.textContent = mb + 'MB';
+        })
+        .catch(() => { tag.textContent = ''; });
+    })();
+  </script>
 </body>
 </html>
